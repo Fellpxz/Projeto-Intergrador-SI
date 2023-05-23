@@ -1,3 +1,83 @@
+import mysql.connector
+
+# Configurações de conexão com o banco de dados
+config = {
+    'host': 'us-cdbr-east-06.cleardb.net',
+    'user': 'be4227e4b6f77a',
+    'password': 'c1f135ca',
+    'database': 'heroku_c9cd53735e57e53'
+}
+
+def test_connect():
+    try:
+        # Conecta ao banco de dados
+        conn = mysql.connector.connect(**config)
+
+        # Verifica se a conexão foi bem-sucedida
+        if conn.is_connected():
+            print('Conexão ao banco de dados estabelecida com sucesso.')
+            print("")
+        else:
+            print('Não foi possível estabelecer a conexão ao banco de dados.')
+
+        # Fecha a conexão com o banco de dados
+        conn.close()
+
+    except mysql.connector.Error as error:
+        print('Erro ao conectar-se ao banco de dados:', error)
+
+
+def see_amostra():
+    try:
+        # Conecta ao banco de dados
+        conn = mysql.connector.connect(**config)
+
+        # Cria um objeto cursor para executar as consultas
+        cursor = conn.cursor()
+
+        # Executa uma consulta para recuperar os dados do campo "mp10" da tabela "amostra"
+        cursor.execute('SELECT mp10, mp25, o3, co, no2, so2 FROM amostra WHERE id = ' +  opt )
+
+        # Obtém os resultados da consulta
+        resultados = cursor.fetchall()
+
+        # Verifica se há resultados
+        if resultados:
+            # Itera sobre os resultados e realiza as operações desejadas
+            for resultado in resultados:
+                mp10 = resultado[0]
+                mp25 = resultado[1]
+                o3 = resultado[2]
+                co = resultado[3]
+                no2 = resultado[4]
+                so2 = resultado[5]
+                # Faça o que desejar com o valor de mp10, como cálculos, exibições, etc.
+                print("Valor de mp10:", mp10)
+                mp10_resultado = mp10_nivel(mp10)
+                print("")
+                print("Valor de mp25:", mp25)
+                mp25_resultado = mp25_nivel(mp25)
+                print("")
+                print("Valor de o3:", o3)
+                o3_resultado = o3_nivel(o3)
+                print("")
+                print("Valor de co:", co)
+                co_resultado = co_nivel(co)
+                print("")
+                print("valor de no2:", no2)
+                no2_resultado = no2_nivel(no2)
+                print("")
+                print("Valor de so2:", so2)
+                so2_resultado = so2_nivel(so2)
+                print("")
+                verificar(mp10_resultado, mp25_resultado, o3_resultado, co_resultado, no2_resultado, so2_resultado)
+
+        # Fecha a conexão com o banco de dados
+        conn.close()
+
+    except mysql.connector.Error as error:
+        print('Erro ao conectar-se ao banco de dados:', error)
+
 def mp10_nivel(mp10):
     if mp10 <= 50:
         print("O MP10 está bom, não oferece problemas para a saúde.\n")
@@ -14,8 +94,6 @@ def mp10_nivel(mp10):
     else:
         print("O valor está péssimo, Toda a população pode apresentar sérios riscos de manifestações de doenças respiratórias e cardiovasculares. Aumento de mortes prematuras em pessoas de grupos sensíveis.\n")
         return "pessimo"
-
-
 
 def mp25_nivel(mp25):
     if mp25 <= 25:
@@ -110,7 +188,6 @@ def so2_nivel(so2):
         print("O SO2 está péssimo, Toda a população pode apresentar sérios riscos de manifestações de doenças respiratórias e cardiovasculares. Aumento de mortes prematuras em pessoas de grupos sensíveis. \n")
         return "pessimo"
 
-
 def verificar(mp10_resultado, mp25_resultado, o3_resultado, co_resultado, no2_resultado, so2_resultado):
     if mp10_resultado == "bom" and mp25_resultado == "bom" and o3_resultado == "bom" and co_resultado == "bom" and no2_resultado == "bom" and so2_resultado == "bom":
         print("O índice geral de qualidade do ar é bom. E não oferece risco algum a saúde! \n")
@@ -128,70 +205,29 @@ def verificar(mp10_resultado, mp25_resultado, o3_resultado, co_resultado, no2_re
         print("O valor do índice está muito ruim, toda a população pode apresentar agravamento dos sintomas como tosse, falta de ar e irritação nos olhos, além de dores de cabeça. Efeitos ainda mais graves na saúde de pessoas com doenças respiratórias e cardíacas. \n")
 
     else:
-        print("O valor do índice está péssimo, Toda a população pode apresentar sérios riscos de manifestações de doenças respiratórias e cardiovasculares. Aumento de mortes prematuras em pessoas de grupos sensíveis. \n")       
-
-
-
+        print("O valor do índice está péssimo, Toda a população pode apresentar sérios riscos de manifestações de doenças respiratórias e cardiovasculares. Aumento de mortes prematuras em pessoas de grupos sensíveis. \n")     
 
 while True:
     try:
-        mp10 = int(input("Digite o valor do MP10 em microgramas: "))
-        if mp10 < 0:
-            print("Valor inválido. Certifique-se de que o valor inserido seja maior ou igual a 0.")
-            continue
-
-        mp25 = int(input("Digite o valor do MP2.5 em microgramas: "))
-        if mp25 < 0:
-            print("Valor inválido. Certifique-se de que o valor inserido seja maior ou igual a 0.")
-            continue
-
-        o3 = int(input("Digite o valor do O3 em microgramas: "))
-        if o3 < 0:
-            print("Valor inválido. Certifique-se de que o valor inserido seja maior ou igual a 0.")
-            continue
-
-        co = int(input("Digite o valor do CO em PPM: "))
-        if co < 0:
-            print("Valor inválido. Certifique-se de que o valor inserido seja maior ou igual a 0.")
-            continue
-
-        no2 = int(input("Digite o valor do NO2 em microgramas: "))
-        if no2 < 0:
-            print("Valor inválido. Certifique-se de que o valor inserido seja maior ou igual a 0.")
-            continue
-
-        so2 = int(input("Digite o valor do SO2 em microgramas: "))
-        if so2 < 0:
-            print("Valor inválido. Certifique-se de que o valor inserido seja maior ou igual a 0.")
-            continue
-
+        option = int(input("Selecione as amostras: \n 1 \n 2 \n 3 \n 4 \n 5 \nDigite a opção escolhida: "))
         print("")
 
+        opt = str(option)
+        if option < 1 or option > 5:
+            print("Selecione a opção inválida, selecione o número entre (1, 2, 3, 4, 5)")
+            continue
+            
 
     except ValueError:
-        print("Valor inválido. Certifique-se de que o valor inserido seja um número.")
+        print("O valor colocado é inválido, tente colocar números dentro das opções indicadas.")
         continue
 
-    # calcular nível de MP10 e imprimir
-    mp10_resultado = mp10_nivel(mp10)
+    # Testa a conexão
+    test_connect()
 
-    # calcular nível de MP25 e imprimir
-    mp25_resultado = mp25_nivel(mp25)
+    # Obtém e exibe os valores da tabela 'amostra'
+    see_amostra()
 
-    # calcular nível de O3 e imprimir
-    o3_resultado = o3_nivel(o3)
-
-    # calcular nível de CO e imprimir
-    co_resultado = co_nivel(co)
-   
-    # calcular nível de NO2 e imprimir
-    no2_resultado = no2_nivel(no2)
-    
-    # calcular nível de SO2 e imprimir
-    so2_resultado = so2_nivel(so2)
-
-    verificar(mp10_resultado, mp25_resultado, o3_resultado, co_resultado, no2_resultado, so2_resultado)
- 
 
     while True:
         resposta = input("Deseja usar a aplicação novamente? (S/N)").lower()
