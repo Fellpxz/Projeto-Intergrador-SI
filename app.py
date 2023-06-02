@@ -27,7 +27,7 @@ def test_connect():
         print('Erro ao conectar-se ao banco de dados:', error)
 
 
-def see_amostra():
+def testar_amostra(id):
     try:
         # Conecta ao banco de dados
         conn = mysql.connector.connect(**config)
@@ -36,7 +36,7 @@ def see_amostra():
         cursor = conn.cursor()
 
         # Executa uma consulta para recuperar os dados do campo "mp10" da tabela "amostra"
-        cursor.execute('SELECT mp10, mp25, o3, co, no2, so2 FROM amostra WHERE id = ' +  opt )
+        cursor.execute('SELECT mp10, mp25, o3, co, no2, so2 FROM amostra WHERE id = ' + str(id))
 
         # Obtém os resultados da consulta
         resultados = cursor.fetchall()
@@ -74,9 +74,179 @@ def see_amostra():
 
         # Fecha a conexão com o banco de dados
         conn.close()
+    except mysql.connector.Error as error:
+        print('Erro ao conectar-se ao banco de dados:', error)
+
+
+def ver_amostras():
+    try:
+        # Conecta ao banco de dados
+        conn = mysql.connector.connect(**config)
+
+        # Cria um objeto cursor para executar as consultas
+        cursor = conn.cursor()
+
+        # Comando Executado!
+        cursor.execute("SELECT * FROM amostra ORDER BY id ASC")
+
+        # Obtém os resultados da consulta
+        resultados = cursor.fetchall()
+
+        resultado_formatado = []
+        if resultados:
+
+            for item in resultados:
+                item_formatado =  [str(valor).replace("Decimal", "").replace("(", "").replace(")", "") for valor in item]  
+                resultado_formatado.append(item_formatado)
+            
+            for item in resultado_formatado:
+                print(item)
+        
+        # Fecha a conexão com o banco de dados
+        conn.close()
+    except mysql.connector.Error as error:
+        print('Erro ao conectar-se ao banco de dados:', error)
+
+
+def criar_amostras(id_res, mp10_res, mp25_res, o3_res, co_res, no2_res, so2_res):
+    # Conecta ao banco de dados
+    conn = mysql.connector.connect(**config)
+
+    # Cria um objeto cursor para executar as consultas
+    cursor = conn.cursor()
+
+    try:
+        id_num = int(id_res)
+        id_soma = id_num + 1
+        # Executa o comando de inserção
+        query = "INSERT INTO amostra (id, mp10, mp25, o3, co, no2, so2) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+        values = (id_soma, mp10_res, mp25_res, o3_res, co_res, no2_res, so2_res)
+        cursor.execute(query, values)
+
+        # Confirma as alterações no banco de dados
+        conn.commit()
+
+        # Obtém o ID do último elemento inserido
+        print("Amostra criada com sucesso. ID:", id_soma)
+
+    except mysql.connector.Error as error:
+        print("Erro ao criar a amostra:", error)
+
+    # Fecha a conexão com o banco de dados
+    conn.close()
+
+def pegar_ultima():
+    try:
+        # Conecta ao banco de dados
+        conn = mysql.connector.connect(**config)
+
+        # Cria um objeto cursor para executar as consultas
+        cursor = conn.cursor()
+
+        # Mostrar a ultima amostra
+        cursor.execute("SELECT id FROM amostra ORDER BY id DESC LIMIT 1;")
+
+        # Obtém os resultados da consulta
+        resultados = cursor.fetchall()
+
+        resultado_formatado = str(resultados[0]).strip('(),')
+
+        return resultado_formatado
+        
+        # Fecha a conexão com o banco de dados
+        conn.close()
 
     except mysql.connector.Error as error:
         print('Erro ao conectar-se ao banco de dados:', error)
+        
+
+def mostrar_ultima():
+    try:
+        # Conecta ao banco de dados
+        conn = mysql.connector.connect(**config)
+
+        # Cria um objeto cursor para executar as consultas
+        cursor = conn.cursor()
+
+        # Mostrar a ultima amostra
+        cursor.execute("SELECT * FROM amostra ORDER BY id DESC LIMIT 1;")
+
+        # Obtém os resultados da consulta
+        resultados = cursor.fetchall()
+
+        resultado_formatado = []
+        if resultados:
+
+            for item in resultados:
+                item_formatado =  [str(valor).replace("Decimal", "").replace("(", "").replace(")", "") for valor in item]  
+                resultado_formatado.append(item_formatado)
+            
+            for item in resultado_formatado:
+                print(item)
+    
+            # Fecha a conexão com o banco de dados
+        conn.close()
+
+    except mysql.connector.Error as error:
+        print('Erro ao conectar-se ao banco de dados:', error)
+
+def mostrar_selecionada(id):
+    try:
+        conn = mysql.connector.connect(**config)
+        cursor = conn.cursor()
+
+        cursor.execute(f"SELECT * FROM amostra WHERE id = {id}")
+
+        resultados = cursor.fetchall()
+
+        resultado_formatado = []
+        if resultados:
+
+            for item in resultados:
+                item_formatado =  [str(valor).replace("Decimal", "").replace("(", "").replace(")", "") for valor in item]  
+                resultado_formatado.append(item_formatado)
+            
+            for item in resultado_formatado:
+                print(item)
+    
+
+        conn.close()
+
+    except mysql.connector.Error as error:
+        print('Erro ao conectar-se ao banco de dados:', error)
+
+
+def excluir_amostra(id):
+    try:
+        conn = mysql.connector.connect(**config)
+        cursor = conn.cursor()
+
+        cursor.execute(f"DELETE FROM amostra WHERE id = {id}")
+        conn.commit()
+
+        conn.close()
+    except mysql.connector.Error as error:
+        print('Erro ao conectar-se ao banco de dados:', error)
+
+def editar_amostra(id, mp10, mp25, o3, co, no2, so2):
+    try:
+        conn = mysql.connector.connect(**config)
+        cursor = conn.cursor()
+        
+
+        # Constrói o comando UPDATE com os valores a serem atualizados
+        cursor.execute(f"UPDATE amostra SET mp10 = {mp10}, mp25 = {mp25}, o3 = {o3}, co = {co}, no2 = {no2}, so2 = {so2} WHERE id = {id}")
+        
+        cursor.fetchall()
+        conn.commit()
+
+        print("")
+        print("Editado com sucesso!")
+
+        conn.close()
+    except mysql.connector.Error as error:
+        print('Erro ao conectar-se ao banco de dados:', error)
+
 
 def mp10_nivel(mp10):
     if mp10 <= 50:
@@ -209,31 +379,91 @@ def verificar(mp10_resultado, mp25_resultado, o3_resultado, co_resultado, no2_re
 
 while True:
     try:
-        option = int(input("Selecione as amostras: \n 1 \n 2 \n 3 \n 4 \n 5 \nDigite a opção escolhida: "))
-        print("")
+        res = int(input("Selecione o que você deseja fazer: \n1- Ver amostras existentes \n2- Testar amostras existentes \n3- Criar novas amostras \n4- Editar amostras existentes \n5- Deletar amostras existentes\n6- Encerrar programa!\nResposta: "))
+        print('')
 
-        opt = str(option)
-        if option < 1 or option > 5:
-            print("Selecione a opção inválida, selecione o número entre (1, 2, 3, 4, 5)")
+        if res < 1 or res > 6: 
+            print("O valor colocado é inválido, tente colocar números dentro das opções indicadas.")
             continue
+
+        else:
+            if res == 1:
+                ver_amostras()
+                print("")
+
+            elif res == 2:
+                try:
+                    ver_amostras()
+                    print()
+                    get_id = int(input(f"Selecione o ID da amostra que deseja testar: "))
+                    if get_id < 0 or res > 5:
+                        print("O valor colocado é inválido, tente colocar números dentro das opções indicadas.")
+                    else:
+                        testar_amostra(get_id)
+                        print("")
+                except ValueError:
+                    print("O valor colocado é inválido, tente colocar números dentro das opções indicadas.")
             
+            elif res == 3:
+                get_id = pegar_ultima()
+                print("Você está criando uma nova amostra, coloque os valores respectivamente! \n")
+                get_mp10 = input("Adcione um valor para o MP10: ")
+                get_mp25 = input("Adcione um valor para o MP25: ")
+                get_o3 = input("Adcione um valor para o O3: ")
+                get_co = input("Adcione um valor para o CO: ")
+                get_no2 = input("Adcione um valor para o NO2: ")
+                get_so2 = input("Adcione um valor para o SO2: ")
+
+                criar_amostras(get_id, get_mp10, get_mp25, get_o3, get_co, get_no2, get_so2)
+                print("")
+                mostrar_ultima()
+                print("")
+            
+            elif res == 4:
+                ver_amostras()
+                print("")
+                get_id = int(input("Coloque o ID da tabela que será editada: "))
+                print(f"Você está editando a tabela amostra, na linha {get_id} , coloque os valores respectivamente! \n")
+                mostrar_selecionada(get_id)
+                print("")
+                get_mp10 = input("Adcione um valor para o MP10: ")
+                get_mp25 = input("Adcione um valor para o MP25: ")
+                get_o3 = input("Adcione um valor para o O3: ")
+                get_co = input("Adcione um valor para o CO: ")
+                get_no2 = input("Adcione um valor para o NO2: ")
+                get_so2 = input("Adcione um valor para o SO2: ")
+
+                editar_amostra(get_id, get_mp10, get_mp25, get_o3, get_co, get_no2, get_so2)
+                mostrar_selecionada(get_id)
+                print("")
+
+            elif res == 5:
+                ver_amostras()
+                print("")
+                get_id = int(input("Adcione o ID da amostra que será exluido: "))
+                excluir_amostra(get_id)
+                print("")
+                ver_amostras()
+                print("")
+            
+            elif res == 6:
+                  break
+
+
 
     except ValueError:
         print("O valor colocado é inválido, tente colocar números dentro das opções indicadas.")
         continue
 
     # Testa a conexão
-    test_connect()
-
-    # Obtém e exibe os valores da tabela 'amostra'
-    see_amostra()
-
+    #test_connect()
 
     while True:
         resposta = input("Deseja usar a aplicação novamente? (S/N)").lower()
         if resposta == 'n':
             break
         elif resposta == 's':
+            print('')
             break
         else:
             print("Opção inválida. Digite 'S' para continuar ou 'N' para sair.")
