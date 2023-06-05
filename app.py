@@ -93,7 +93,11 @@ def ver_amostras():
         resultados = cursor.fetchall()
 
         resultado_formatado = []
-        if resultados:
+
+        if resultados == None:
+            print("Não tem nenhuma amostra com esse ID")
+
+        elif resultados:
 
             for item in resultados:
                 item_formatado =  [str(valor).replace("Decimal", "").replace("(", "").replace(")", "") for valor in item]  
@@ -232,22 +236,22 @@ def editar_amostra(id, mp10, mp25, o3, co, no2, so2):
     try:
         conn = mysql.connector.connect(**config)
         cursor = conn.cursor()
-        
 
         # Constrói o comando UPDATE com os valores a serem atualizados
-        cursor.execute(f"UPDATE amostra SET mp10 = {mp10}, mp25 = {mp25}, o3 = {o3}, co = {co}, no2 = {no2}, so2 = {so2} WHERE id = {id}")
-        
-        cursor.fetchall()
+        query = f"UPDATE amostra SET mp10 = {mp10}, mp25 = {mp25}, o3 = {o3}, co = {co}, no2 = {no2}, so2 = {so2} WHERE id = {id}"
+        cursor.execute(query)
+
+        # Verifica se a atualização afetou alguma linha
+        if cursor.rowcount > 0:
+            print("Amostra atualizada com sucesso!")
+        else:
+            print("Nenhuma amostra encontrada com o ID especificado.")
+
         conn.commit()
-
-        print("")
-        print("Editado com sucesso!")
-
         conn.close()
     except mysql.connector.Error as error:
         print('Erro ao conectar-se ao banco de dados:', error)
-
-
+        
 def mp10_nivel(mp10):
     if mp10 <= 50:
         print("O MP10 está bom, não oferece problemas para a saúde.\n")
@@ -396,13 +400,10 @@ while True:
                     ver_amostras()
                     print()
                     get_id = int(input(f"Selecione o ID da amostra que deseja testar: "))
-                    if get_id < 0 or res > 5:
-                        print("O valor colocado é inválido, tente colocar números dentro das opções indicadas.")
-                    else:
-                        testar_amostra(get_id)
-                        print("")
+                    testar_amostra(get_id)
+                    print("")
                 except ValueError:
-                    print("O valor colocado é inválido, tente colocar números dentro das opções indicadas.")
+                    print("O valor colocado é inválido")
             
             elif res == 3:
                 get_id = pegar_ultima()
@@ -422,8 +423,8 @@ while True:
             elif res == 4:
                 ver_amostras()
                 print("")
-                get_id = int(input("Coloque o ID da tabela que será editada: "))
-                print(f"Você está editando a tabela amostra, na linha {get_id} , coloque os valores respectivamente! \n")
+                get_id = int(input("Coloque o ID do elemento que você deseja editar (Primeira coluna!): "))
+                print("")
                 mostrar_selecionada(get_id)
                 print("")
                 get_mp10 = input("Adcione um valor para o MP10: ")
@@ -434,8 +435,9 @@ while True:
                 get_so2 = input("Adcione um valor para o SO2: ")
 
                 editar_amostra(get_id, get_mp10, get_mp25, get_o3, get_co, get_no2, get_so2)
-                mostrar_selecionada(get_id)
                 print("")
+                mostrar_selecionada(get_id)
+
 
             elif res == 5:
                 ver_amostras()
