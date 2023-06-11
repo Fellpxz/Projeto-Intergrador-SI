@@ -1,15 +1,13 @@
-from Models.Model import UserModel
-from Views.View import UserView
+from Models.Model import DatabaseOperations
 
-class UserController:
+class MainController:
+    # Seting the Self Operator
     def __init__(self):
-        self.model = UserModel()
-        self.view = UserView()
+        self.database = DatabaseOperations('us-cdbr-east-06.cleardb.net', 'be4227e4b6f77a', 'c1f135ca', 'heroku_c9cd53735e57e53')
 
-    def create_user(self):
-        name, email = self.view.get_user_input()
-        self.model.create_user(name, email)
-
-    def show_users(self):
-        users = self.model.get_users()
-        self.view.show_users(users)
+    # Controls:
+    def see_database_samples(self):
+        self.database.see_samples()
+    
+    def create_database_sample(self, id, mp10, mp25, o3, co, no2, so2):
+        self.database.create_sample()

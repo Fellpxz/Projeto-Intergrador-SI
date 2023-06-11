@@ -1,10 +1,9 @@
-class UserView:
-    def show_users(self, users):
-        print("Lista de usuários:")
-        for user in users:
-            print(f"Nome: {user['name']}, Email: {user['email']}")
+from Controller.Controller import MainController
 
-    def get_user_input(self):
-        name = input("Digite o nome do usuário: ")
-        email = input("Digite o email do usuário: ")
-        return name, email
+def main():
+    controller = MainController()
+    controller.test_database_connection()
+    controller.see_database_samples()
+
+if __name__ == "__main__":
+    main()
